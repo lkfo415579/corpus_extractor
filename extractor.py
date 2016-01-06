@@ -1,7 +1,8 @@
+#-*- coding: UTF-8 -*- 
 #Written by Revo,12/19/2015 4:15PM
 import os
 import sys
-print "Corpus Doc Scanner , Version1.7"
+print "Corpus Doc Scanner , Version1.8"
 if len(sys.argv) < 2:
 	print "Usage:python extractor.py [en|zh]"
 	print "Description: parameter en is to extract pt & en corpus, zh is the same."
@@ -72,6 +73,18 @@ def error_occur(a,b):
 		create_folder(a)
 		return 1
 		
+def check_special(sentence):
+	spec = ["(macauhub)","(Macauhub)","没有相关新闻。","相关新闻：","Notícias relacionadas:","Notícias relacionadas não existem."]
+	sentence = sentence.strip()
+	#sentence = sentence.strip("　")
+	#print sentence
+	
+	for string in spec:
+		if string.decode('utf-8') == sentence:
+			#print sentence
+			return 1
+	return 0
+		
 def analyze(file,min):
 	with codecs.open(file,'r','utf-8') as f:
 		lines = f.read().splitlines()
@@ -80,11 +93,21 @@ def analyze(file,min):
 	#title line
 	output_text.append(lines[2][7:])
 	#rest of lines
+	
 	if min != -1:
 		#output_text = output_text + lines[6:min]
 		output_text = None
 	else:
+		#print lines[-2]
+		if check_special(lines[-1]):
+			del lines[-1]
+		if check_special(lines[-1]):
+			del lines[-1]
+		if check_special(lines[-1]):
+			del lines[-1]
 		output_text = output_text + lines[6:]
+		
+		
 	return output_text
 
 def output_original(file):
@@ -106,8 +129,8 @@ def combine_pt_zh_en(pt_file):
 			min = min_two(pt_file,zh_file)
 			#zh_data = analyze(zh_file,min)
 			#zh_error_data = analyze(zh_file,-1)
-			zh_data = output_original(zh_file)
-			zh_error_data = zh_data
+			zh_data = analyze(zh_file,-1)
+			zh_error_data = output_original(zh_file)
 			second_condition = True
 	else:
 	#en
@@ -116,18 +139,17 @@ def combine_pt_zh_en(pt_file):
 			min = min_two(pt_file,en_file)
 			#en_data = analyze(en_file,min)
 			#en_error_data = analyze(en_file,-1)
-			en_data = output_original(en_file)
-			en_error_data = en_data
-			
+			en_data = analyze(en_file,-1)
+			en_error_data = output_original(en_file)
 			second_condition = True
 	#pt
 	#above two lan,entered then pt goes progress
 	if second_condition:
 		if os.path.isfile(pt_file):
-			#pt_data = analyze(pt_file,min)
+			pt_data = analyze(pt_file,-1)
 			#pt_error_data = analyze(pt_file,-1)
-			pt_data = output_original(pt_file)
-			pt_error_data = pt_data
+			#pt_data = output_original(pt_file)
+			pt_error_data = output_original(pt_file)
 			
 			True_condition = True
 	if True_condition and second_condition:

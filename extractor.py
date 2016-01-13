@@ -2,7 +2,7 @@
 #Written by Revo,12/19/2015 4:15PM
 import os
 import sys
-print "Corpus Doc Scanner , Version1.8"
+print "Corpus Doc Scanner , Version1.9"
 if len(sys.argv) < 2:
 	print "Usage:python extractor.py [en|zh]"
 	print "Description: parameter en is to extract pt & en corpus, zh is the same."
@@ -63,10 +63,14 @@ def create_folder(filename):
 		os.makedirs(error_dir+directory)
 		
 def error_occur(a,b):
-	with open(a) as f:
+	with codecs.open(a,'r','utf-8') as f:
 		lines_a = f.read().splitlines()
-	with open(b) as f:
+	with codecs.open(b,'r','utf-8') as f:
 		lines_b = f.read().splitlines()
+		
+	delete_last3_col(lines_a)
+	delete_last3_col(lines_b)
+		
 	if len(lines_a) == len(lines_b):
 		return 0
 	else:
@@ -85,6 +89,15 @@ def check_special(sentence):
 			return 1
 	return 0
 		
+def delete_last3_col(lines):
+	if check_special(lines[-1]):
+		del lines[-1]
+	if check_special(lines[-1]):
+		del lines[-1]
+	if check_special(lines[-1]):
+		del lines[-1]
+	return lines
+		
 def analyze(file,min):
 	with codecs.open(file,'r','utf-8') as f:
 		lines = f.read().splitlines()
@@ -99,12 +112,7 @@ def analyze(file,min):
 		output_text = None
 	else:
 		#print lines[-2]
-		if check_special(lines[-1]):
-			del lines[-1]
-		if check_special(lines[-1]):
-			del lines[-1]
-		if check_special(lines[-1]):
-			del lines[-1]
+		delete_last3_col(lines)
 		output_text = output_text + lines[6:]
 		
 		

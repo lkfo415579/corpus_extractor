@@ -12,3 +12,6 @@ setted default ./
 2.inparallel file will not write into output
 1.7
 --
+1.delete special words before checking lines
+1.9
+--

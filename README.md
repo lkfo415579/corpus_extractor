@@ -12,3 +12,8 @@ setted default ./
 2.inparallel file will not write into output
 1.7
 --
+1.move another files to error directory
+2.trim the spaces both sides of sentence
+3.hard to implement, if you really want, I still can do it.
+1.9
+--

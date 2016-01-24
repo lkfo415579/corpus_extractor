@@ -2,7 +2,7 @@
 #Written by Revo,12/19/2015 4:15PM
 import os
 import sys
-print "Corpus Doc Scanner , Version1.8"
+print "Corpus Doc Scanner , Version1.9"
 if len(sys.argv) < 2:
 	print "Usage:python extractor.py [en|zh]"
 	print "Description: parameter en is to extract pt & en corpus, zh is the same."
@@ -85,6 +85,13 @@ def check_special(sentence):
 			return 1
 	return 0
 		
+def strim_space(sentences):
+	
+	for line_n in range(0,len(sentences)):
+		sentences[line_n] = sentences[line_n].strip()
+		
+	return sentences
+		
 def analyze(file,min):
 	with codecs.open(file,'r','utf-8') as f:
 		lines = f.read().splitlines()
@@ -105,7 +112,10 @@ def analyze(file,min):
 			del lines[-1]
 		if check_special(lines[-1]):
 			del lines[-1]
-		output_text = output_text + lines[6:]
+		
+		last_lines = strim_space(lines[6:])
+		output_text = output_text + last_lines
+		#output_text = output_text + lines[6:]
 		
 		
 	return output_text
@@ -125,6 +135,7 @@ def combine_pt_zh_en(pt_file):
 	if choice == 'zh':
 	#zh
 		zh_file = pt_file[:-3] + ".cn"
+		en_file = pt_file[:-3] + ".en"
 		if os.path.isfile(zh_file):
 			min = min_two(pt_file,zh_file)
 			#zh_data = analyze(zh_file,min)
@@ -134,6 +145,7 @@ def combine_pt_zh_en(pt_file):
 			second_condition = True
 	else:
 	#en
+		zh_file = pt_file[:-3] + ".cn"
 		en_file = pt_file[:-3] + ".en"
 		if os.path.isfile(en_file):
 			min = min_two(pt_file,en_file)
@@ -167,6 +179,8 @@ def combine_pt_zh_en(pt_file):
 						the_file.write(line + '\n')
 				#os.remove(en_file)
 				os.unlink(en_file)
+				if os.path.isfile(zh_file):
+					os.unlink(zh_file)
 			else:
 				with codecs.open(output_en, 'a','utf-8') as the_file:
 					for line in en_data:
@@ -182,6 +196,8 @@ def combine_pt_zh_en(pt_file):
 				#print (zh_file)
 				#os.remove(zh_file)
 				os.unlink(zh_file)
+				if os.path.isfile(en_file):
+					os.unlink(en_file)
 			else:
 				with codecs.open(output_zh, 'a','utf-8') as the_file:
 					for line in zh_data:
